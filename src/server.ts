@@ -3,8 +3,6 @@ import express from 'express';
 import cors from 'cors';
 import dotenvExpand from 'dotenv-expand';
 import dotenv from 'dotenv';
-import prisma from './lib/prisma';
-import { StatusCodes } from 'http-status-codes';
 
 const env = dotenv.config();
 
