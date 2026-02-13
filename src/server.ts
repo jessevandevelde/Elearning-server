@@ -3,6 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenvExpand from 'dotenv-expand';
 import dotenv from 'dotenv';
+import prisma from './lib/prisma';
+import { StatusCodes } from 'http-status-codes';
 
 const env = dotenv.config();
 
@@ -15,6 +17,8 @@ const serverUrl = process.env.SERVER_URL;
 
 const app = express();
 
+app.use(express.json());
+
 app.use(cors({
   origin: clientUrl,
   credentials: true,
@@ -26,8 +30,8 @@ app.get('/', (_req: Request, res: Response) => {
 
 if (serverPort && clientUrl && serverUrl) {
   app.listen(serverPort, serverUrl, () => {
-  // eslint-disable-next-line no-console
-    console.log(`Server running at http://127.0.0.1:${serverPort}`);
+    // eslint-disable-next-line no-console
+    console.log(`Server running at http://${serverUrl}:${serverPort}`);
   });
 }
 else {
