@@ -5,6 +5,7 @@ import dotenvExpand from 'dotenv-expand';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import authRouter from './authentication';
+import practiceListRouter from './practice-list';
 
 const env = dotenv.config();
 
@@ -26,6 +27,7 @@ app.use(cors({
 }));
 
 app.use('/auth', authRouter);
+app.use('/practice-list', practiceListRouter);
 
 app.get('/', (_req: Request, res: Response) => {
   res.json({ message: 'Server is running' });

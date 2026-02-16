@@ -14,19 +14,28 @@ datasource db {
 }
 
 model User {
-  id            Int            @id @default(autoincrement())
-  email         String         @unique
-  name          String
-  password      String
+  id Int @id @default(autoincrement())
+  email String @unique
+  name String
+  password String
   practiceLists PracticeList[]
 }
 
 model PracticeList {
-  id        Int     @id @default(autoincrement())
-  dutchWord     String
-  englishWord   String
+  id Int @id @default(autoincrement())
+  title String
   isPrivate Boolean @default(true)
-
+  
   userId Int
-  user User @relation(fields: [userId], references: [id]) // Definieert de connectie
+  user User @relation(fields: [userId], references: [id])
+  words Word[]
+}
+
+model Word {
+  id Int @id @default(autoincrement())
+  dutchWord String
+  englishWord String
+
+  practiceListId Int
+  practiceList PracticeList @relation(fields: [practiceListId], references: [id], onDelete: Cascade)
 }
