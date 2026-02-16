@@ -14,8 +14,19 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  email String @unique
-  name String
-  password String
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  name          String
+  password      String
+  practiceLists PracticeList[]
+}
+
+model PracticeList {
+  id        Int     @id @default(autoincrement())
+  dutchWord     String
+  englishWord   String
+  isPrivate Boolean @default(true)
+
+  userId Int
+  user User @relation(fields: [userId], references: [id]) // Definieert de connectie
 }
