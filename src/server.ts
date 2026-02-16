@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenvExpand from 'dotenv-expand';
 import dotenv from 'dotenv';
+import authRouter from './authentication';
 
 const env = dotenv.config();
 
@@ -21,6 +22,8 @@ app.use(cors({
   origin: clientUrl,
   credentials: true,
 }));
+
+app.use('/auth', authRouter);
 
 app.get('/', (_req: Request, res: Response) => {
   res.json({ message: 'Server is running' });
