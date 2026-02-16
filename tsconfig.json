@@ -8,5 +8,7 @@
     "esModuleInterop": true,
     "strict": true,
     "types": ["cookie-parser", "cors"]
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "prisma", "dist"]
 }
