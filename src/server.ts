@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenvExpand from 'dotenv-expand';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 import authRouter from './authentication';
 
 const env = dotenv.config();
@@ -17,6 +18,7 @@ const serverUrl = process.env.SERVER_URL;
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use(cors({
   origin: clientUrl,

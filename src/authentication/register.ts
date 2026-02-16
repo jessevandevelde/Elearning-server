@@ -38,7 +38,10 @@ export async function register(req: Request, res: Response): Promise<void> {
       },
     });
 
-    res.status(StatusCodes.CREATED).json({ message: 'User registered successfully' });
+    res.status(StatusCodes.CREATED).json({
+      message: 'User registered successfully',
+      redirectUrl: 'http://127.0.0.1:4200/login',
+    });
   }
   catch (error) {
     console.error('Register error', error);
