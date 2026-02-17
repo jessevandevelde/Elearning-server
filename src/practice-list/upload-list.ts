@@ -52,7 +52,6 @@ export async function uploadList(
   }));
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const createdList = await prisma.practiceList.create({
       data: {
         title,
