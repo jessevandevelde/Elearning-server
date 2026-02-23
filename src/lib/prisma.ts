@@ -20,6 +20,6 @@ const pool = new Pool({
 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-type-assertion
 const adapter = new PrismaPg(pool as any);
 // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion, @typescript-eslint/no-explicit-any
-const prisma = new PrismaClient({ adapter: adapter as any });
+const prisma: PrismaClient = new PrismaClient({ adapter: adapter as any });
 
 export default prisma;
