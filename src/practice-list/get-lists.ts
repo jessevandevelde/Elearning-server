@@ -1,10 +1,7 @@
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import prisma from '../lib/prisma';
-
-interface AuthenticatedRequest extends Request {
-  user?: { id: number }
-}
+import type { AuthenticatedRequest } from '../authentication/isauthenticated';
 
 interface PracticeListResponse {
   publicLists: {
