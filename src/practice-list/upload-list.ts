@@ -12,7 +12,10 @@ function isWordInput(value: unknown): value is PracticeListWordInput {
     return false;
   }
 
-  return typeof value.dutchWord === 'string' && typeof value.englishWord === 'string';
+  const hasValidDutchWord = typeof value.dutchWord === 'string' && value.dutchWord.trim().length > 0;
+  const hasValidEnglishWord = typeof value.englishWord === 'string' && value.englishWord.trim().length > 0;
+
+  return hasValidDutchWord && hasValidEnglishWord;
 }
 
 function isPracticeListCreateInput(value: unknown): value is PracticeListCreateInput {
