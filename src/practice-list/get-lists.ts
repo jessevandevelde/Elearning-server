@@ -2,21 +2,7 @@ import type { Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import prisma from '../lib/prisma';
 import type { AuthenticatedRequest } from '../authentication/isauthenticated';
-
-interface PracticeListResponse {
-  publicLists: {
-    id: number
-    title: string
-    isPrivate: boolean
-    userId: number
-  }[]
-  privateLists: {
-    id: number
-    title: string
-    isPrivate: boolean
-    userId: number
-  }[]
-}
+import type { PracticeListResponse } from '../types/practice-list.interface';
 
 export async function getPracticeLists(req: AuthenticatedRequest, res: Response): Promise<void> {
   const userId = req.user?.id;
@@ -41,11 +27,31 @@ export async function getPracticeLists(req: AuthenticatedRequest, res: Response)
         title: true,
         isPrivate: true,
         userId: true,
+        _count: {
+          select: { words: true },
+        },
       },
     });
 
-    const publicLists = practiceLists.filter(list => !list.isPrivate);
-    const privateLists = practiceLists.filter(list => list.isPrivate);
+    const publicLists = practiceLists
+      .filter(list => !list.isPrivate)
+      .map(list => ({
+        id: list.id,
+        title: list.title,
+        isPrivate: list.isPrivate,
+        userId: list.userId,
+        wordCount: list._count.words,
+      }));
+
+    const privateLists = practiceLists
+      .filter(list => list.isPrivate)
+      .map(list => ({
+        id: list.id,
+        title: list.title,
+        isPrivate: list.isPrivate,
+        userId: list.userId,
+        wordCount: list._count.words,
+      }));
 
     const response: PracticeListResponse = {
       publicLists,
