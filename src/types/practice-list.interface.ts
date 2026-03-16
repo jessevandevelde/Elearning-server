@@ -22,3 +22,18 @@ export interface PracticeListResponse {
   publicLists: PracticeListWithWordCount[]
   privateLists: PracticeListWithWordCount[]
 }
+
+export interface PracticeWordPrompt {
+  id: number
+  dutchWord: string
+}
+
+export interface PracticeWordResponse {
+  listId: number
+  title: string
+  totalWords: number
+  currentWordIndex: number
+  currentWord: PracticeWordPrompt
+  hasNextWord: boolean
+  nextIndex: number | null
+}
