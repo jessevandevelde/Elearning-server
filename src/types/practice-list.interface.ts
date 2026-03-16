@@ -37,3 +37,19 @@ export interface PracticeWordResponse {
   hasNextWord: boolean
   nextIndex: number | null
 }
+
+export interface SubmitPracticeAnswerRequest {
+  index: number
+  answer: string
+}
+
+export interface PracticeAnswerResponse {
+  listId: number
+  title: string
+  totalWords: number
+  answerIsCorrect: boolean
+  currentWordIndex: number | null
+  currentWord: PracticeWordPrompt | null
+  hasNextWord: boolean
+  nextIndex: number | null
+}
