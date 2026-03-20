@@ -25,10 +25,14 @@ function isSubmitPracticeAnswerRequest(value: unknown): value is SubmitPracticeA
 
   const indexValue: unknown = Reflect.get(value, 'index');
   const answerValue: unknown = Reflect.get(value, 'answer');
+  const correctAnswersValue: unknown = Reflect.get(value, 'correctAnswers');
+  const wrongAnswersValue: unknown = Reflect.get(value, 'wrongAnswers');
   const hasValidIndex = Number.isInteger(indexValue) && Number(indexValue) >= 0;
   const hasValidAnswer = typeof answerValue === 'string' && answerValue.trim().length > 0;
+  const hasValidCorrectAnswers = Number.isInteger(correctAnswersValue) && Number(correctAnswersValue) >= 0;
+  const hasValidWrongAnswers = Number.isInteger(wrongAnswersValue) && Number(wrongAnswersValue) >= 0;
 
-  return hasValidIndex && hasValidAnswer;
+  return hasValidIndex && hasValidAnswer && hasValidCorrectAnswers && hasValidWrongAnswers;
 }
 
 function normalizeAnswer(answer: string): string {
@@ -64,7 +68,7 @@ export async function submitPracticeAnswer(
     return;
   }
 
-  const { index: answeredIndex, answer } = req.body;
+  const { index: answeredIndex, answer, correctAnswers, wrongAnswers } = req.body;
 
   try {
     const practiceList = await prisma.practiceList.findFirst({
@@ -121,6 +125,8 @@ export async function submitPracticeAnswer(
       title: practiceList.title,
       totalWords,
       answerIsCorrect,
+      correctAnswers: answerIsCorrect ? correctAnswers + 1 : correctAnswers,
+      wrongAnswers: answerIsCorrect ? wrongAnswers : wrongAnswers + 1,
       currentWordIndex: hasNextWord ? nextIndex + 1 : null,
       currentWord: nextWord
         ? {

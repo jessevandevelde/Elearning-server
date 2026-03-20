@@ -41,6 +41,8 @@ export interface PracticeWordResponse {
 export interface SubmitPracticeAnswerRequest {
   index: number
   answer: string
+  correctAnswers: number
+  wrongAnswers: number
 }
 
 export interface PracticeAnswerResponse {
@@ -48,6 +50,8 @@ export interface PracticeAnswerResponse {
   title: string
   totalWords: number
   answerIsCorrect: boolean
+  correctAnswers: number
+  wrongAnswers: number
   currentWordIndex: number | null
   currentWord: PracticeWordPrompt | null
   hasNextWord: boolean
