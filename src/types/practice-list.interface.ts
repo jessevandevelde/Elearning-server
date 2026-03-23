@@ -40,12 +40,14 @@ export interface PracticeListDetailResponse {
 export interface PracticeWordPrompt {
   id: number
   dutchWord: string
+  englishWord?: string
 }
 
 export interface PracticeWordResponse {
   listId: number
   title: string
   totalWords: number
+  reverseMode: boolean
   currentWordIndex: number
   currentWord: PracticeWordPrompt
   hasNextWord: boolean
@@ -57,6 +59,7 @@ export interface SubmitPracticeAnswerRequest {
   answer: string
   correctAnswers: number
   wrongAnswers: number
+  reverseMode?: boolean
 }
 
 export interface PracticeAnswerResponse {
@@ -66,6 +69,7 @@ export interface PracticeAnswerResponse {
   answerIsCorrect: boolean
   correctAnswers: number
   wrongAnswers: number
+  reverseMode: boolean
   currentWordIndex: number | null
   currentWord: PracticeWordPrompt | null
   hasNextWord: boolean

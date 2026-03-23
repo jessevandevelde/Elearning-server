@@ -27,12 +27,14 @@ function isSubmitPracticeAnswerRequest(value: unknown): value is SubmitPracticeA
   const answerValue: unknown = Reflect.get(value, 'answer');
   const correctAnswersValue: unknown = Reflect.get(value, 'correctAnswers');
   const wrongAnswersValue: unknown = Reflect.get(value, 'wrongAnswers');
+  const reverseModeValue: unknown = Reflect.get(value, 'reverseMode');
   const hasValidIndex = Number.isInteger(indexValue) && Number(indexValue) >= 0;
   const hasValidAnswer = typeof answerValue === 'string' && answerValue.trim().length > 0;
   const hasValidCorrectAnswers = Number.isInteger(correctAnswersValue) && Number(correctAnswersValue) >= 0;
   const hasValidWrongAnswers = Number.isInteger(wrongAnswersValue) && Number(wrongAnswersValue) >= 0;
+  const hasValidReverseMode = typeof reverseModeValue === 'boolean' || reverseModeValue === undefined;
 
-  return hasValidIndex && hasValidAnswer && hasValidCorrectAnswers && hasValidWrongAnswers;
+  return hasValidIndex && hasValidAnswer && hasValidCorrectAnswers && hasValidWrongAnswers && hasValidReverseMode;
 }
 
 function normalizeAnswer(answer: string): string {
@@ -68,7 +70,7 @@ export async function submitPracticeAnswer(
     return;
   }
 
-  const { index: answeredIndex, answer, correctAnswers, wrongAnswers } = req.body;
+  const { index: answeredIndex, answer, correctAnswers, wrongAnswers, reverseMode = false } = req.body;
 
   try {
     const practiceList = await prisma.practiceList.findFirst({
@@ -114,7 +116,8 @@ export async function submitPracticeAnswer(
     }
 
     const answeredWord = practiceList.words[answeredIndex];
-    const answerIsCorrect = normalizeAnswer(answer) === normalizeAnswer(answeredWord.englishWord);
+    const correctWord = reverseMode ? answeredWord.dutchWord : answeredWord.englishWord;
+    const answerIsCorrect = normalizeAnswer(answer) === normalizeAnswer(correctWord);
 
     const nextIndex = answeredIndex + 1;
     const hasNextWord = nextIndex < totalWords;
@@ -127,11 +130,13 @@ export async function submitPracticeAnswer(
       answerIsCorrect,
       correctAnswers: answerIsCorrect ? correctAnswers + 1 : correctAnswers,
       wrongAnswers: answerIsCorrect ? wrongAnswers : wrongAnswers + 1,
+      reverseMode,
       currentWordIndex: hasNextWord ? nextIndex + 1 : null,
       currentWord: nextWord
         ? {
             id: nextWord.id,
             dutchWord: nextWord.dutchWord,
+            englishWord: reverseMode ? nextWord.englishWord : undefined,
           }
         : null,
       hasNextWord,

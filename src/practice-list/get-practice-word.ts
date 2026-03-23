@@ -36,6 +36,26 @@ function parseIndexQuery(value: unknown): number | null {
   return parsedValue;
 }
 
+function parseReverseModeQuery(value: unknown): boolean {
+  if (value === undefined) {
+    return false;
+  }
+
+  if (Array.isArray(value)) {
+    return false;
+  }
+
+  if (typeof value === 'string') {
+    return value === 'true';
+  }
+
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
+  return false;
+}
+
 export async function getPracticeWord(req: AuthenticatedRequest, res: Response): Promise<void> {
   const userId = req.user?.id;
 
@@ -61,6 +81,8 @@ export async function getPracticeWord(req: AuthenticatedRequest, res: Response):
     return;
   }
 
+  const reverseMode = parseReverseModeQuery(req.query.reverseMode);
+
   try {
     const practiceList = await prisma.practiceList.findFirst({
       where: {
@@ -81,6 +103,7 @@ export async function getPracticeWord(req: AuthenticatedRequest, res: Response):
           select: {
             id: true,
             dutchWord: true,
+            englishWord: true,
           },
           orderBy: {
             id: 'asc',
@@ -109,10 +132,12 @@ export async function getPracticeWord(req: AuthenticatedRequest, res: Response):
       listId: practiceList.id,
       title: practiceList.title,
       totalWords,
+      reverseMode,
       currentWordIndex: requestedIndex + 1,
       currentWord: {
         id: currentWord.id,
         dutchWord: currentWord.dutchWord,
+        englishWord: reverseMode ? currentWord.englishWord : undefined,
       },
       hasNextWord: requestedIndex + 1 < totalWords,
       nextIndex: requestedIndex + 1 < totalWords ? requestedIndex + 1 : null,
