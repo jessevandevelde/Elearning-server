@@ -22,3 +22,38 @@ export interface PracticeListResponse {
   publicLists: PracticeListWithWordCount[]
   privateLists: PracticeListWithWordCount[]
 }
+
+export interface PracticeWordPrompt {
+  id: number
+  dutchWord: string
+}
+
+export interface PracticeWordResponse {
+  listId: number
+  title: string
+  totalWords: number
+  currentWordIndex: number
+  currentWord: PracticeWordPrompt
+  hasNextWord: boolean
+  nextIndex: number | null
+}
+
+export interface SubmitPracticeAnswerRequest {
+  index: number
+  answer: string
+  correctAnswers: number
+  wrongAnswers: number
+}
+
+export interface PracticeAnswerResponse {
+  listId: number
+  title: string
+  totalWords: number
+  answerIsCorrect: boolean
+  correctAnswers: number
+  wrongAnswers: number
+  currentWordIndex: number | null
+  currentWord: PracticeWordPrompt | null
+  hasNextWord: boolean
+  nextIndex: number | null
+}
