@@ -6,7 +6,6 @@ export interface PracticeListWordInput {
 export interface PracticeListCreateInput {
   title: string
   isPrivate?: boolean
-  userId: number
   words: PracticeListWordInput[]
 }
 
@@ -75,3 +74,69 @@ export interface PracticeAnswerResponse {
   hasNextWord: boolean
   nextIndex: number | null
 }
+
+export interface StopPracticeRequest {
+  correctAnswers: number
+  wrongAnswers: number
+  currentPosition: number
+  reverseMode?: boolean
+}
+
+export interface PracticeProgressResponse {
+  id: number
+  userId: number
+  practiceListId: number
+  correctAnswers: number
+  wrongAnswers: number
+  currentPosition: number
+  reverseMode: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface PracticeProgressRecord {
+  id: number
+  userId: number
+  practiceListId: number
+  correctAnswers: number
+  wrongAnswers: number
+  currentPosition: number
+  reverseMode: boolean
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface StopPracticeResults {
+  totalAttempts: number
+  correctAnswers: number
+  wrongAnswers: number
+  accuracy: number
+  position: number
+  totalWords: number
+  completedPercentage: number
+}
+
+export interface StopPracticeResponse {
+  message: string
+  data: PracticeProgressResponse
+  results: StopPracticeResults
+}
+
+export interface PracticeMissedWord {
+  prompt: string
+  answer: string
+}
+
+export interface PracticeResultsResponse {
+  message: string
+  results: StopPracticeResults
+  missedWords: PracticeMissedWord[]
+}
+
+export interface PracticeProgressStatsRow {
+  correctAnswers: number
+  wrongAnswers: number
+  position: number
+}
+
+export type PracticeResultStats = Pick<PracticeProgressResponse, 'correctAnswers' | 'wrongAnswers' | 'currentPosition'>;
