@@ -4,7 +4,9 @@ import prisma from '../lib/prisma';
 import { uploadList } from './upload-list';
 import { getPracticeLists } from './get-lists';
 import { getPracticeWord } from './get-practice-word';
+import { getPracticeResults } from './get-practice-results';
 import { submitPracticeAnswer } from './submit-practice-answer';
+import { stopPractice } from './stop-practice';
 import { updateList } from './update-list';
 import { isauthenticated, type AuthenticatedRequest } from '../authentication/isauthenticated';
 
@@ -138,6 +140,8 @@ router.delete('/:listId', async (req: AuthenticatedRequest, res): Promise<void> 
   }
 });
 router.get('/:listId/practice', getPracticeWord);
+router.get('/:listId/practice/results', getPracticeResults);
 router.post('/:listId/practice/answer', submitPracticeAnswer);
+router.post('/:listId/practice/stop', stopPractice);
 
 export default router;

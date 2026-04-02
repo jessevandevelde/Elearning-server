@@ -19,6 +19,7 @@ model User {
   name String
   password String
   practiceLists PracticeList[]
+  practiceProgress PracticeProgress[]
 }
 
 model PracticeList {
@@ -29,6 +30,7 @@ model PracticeList {
   userId Int
   user User @relation(fields: [userId], references: [id])
   words Word[]
+  practiceProgress PracticeProgress[]
 }
 
 model Word {
@@ -38,4 +40,23 @@ model Word {
 
   practiceListId Int
   practiceList PracticeList @relation(fields: [practiceListId], references: [id], onDelete: Cascade)
+}
+
+model PracticeProgress {
+  id Int @id @default(autoincrement())
+  userId Int
+  practiceListId Int
+  
+  correctAnswers Int @default(0)
+  wrongAnswers Int @default(0)
+  currentPosition Int @default(0)
+  reverseMode Boolean @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  practiceList PracticeList @relation(fields: [practiceListId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, practiceListId])
 }

@@ -48,7 +48,7 @@ const eslintConfig = defineConfig(
 
 export default defineConfig(
   {
-    ignores: ['node_modules', 'dist'],
+    ignores: ['node_modules', 'dist', 'src/generated/**', 'prisma.config.ts'],
   },
   {
     files: ['**/*.mjs', '**/*.js'],
