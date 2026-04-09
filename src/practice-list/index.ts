@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import prisma from '../lib/prisma';
 import { uploadList } from './upload-list';
 import { getPracticeLists } from './get-lists';
+import { getPastExercises } from './get-past-exercises';
 import { getPracticeWord } from './get-practice-word';
 import { getPracticeResults } from './get-practice-results';
 import { submitPracticeAnswer } from './submit-practice-answer';
@@ -29,6 +30,7 @@ const router = Router();
 router.use(isauthenticated);
 router.post('/upload', uploadList);
 router.get('/get-lists', getPracticeLists);
+router.get('/past-exercises', getPastExercises);
 router.get('/:listId', async (req: AuthenticatedRequest, res): Promise<void> => {
   const userId = req.user?.id;
 

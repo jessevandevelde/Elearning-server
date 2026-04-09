@@ -102,6 +102,35 @@ export async function stopPractice(
       return;
     }
 
+    if (currentPosition >= practiceList._count.words) {
+      await prisma.practiceProgress.deleteMany({
+        where: {
+          userId,
+          practiceListId: listId,
+        },
+      });
+
+      const response: StopPracticeResponse = {
+        message: 'Practice is already completed; no progress saved',
+        data: null,
+        results: {
+          totalAttempts: correctAnswers + wrongAnswers,
+          correctAnswers,
+          wrongAnswers,
+          accuracy: (correctAnswers + wrongAnswers) > 0 ? Math.round((correctAnswers / (correctAnswers + wrongAnswers)) * PERCENTAGE_MULTIPLIER) : 0,
+          position: currentPosition,
+          totalWords: practiceList._count.words,
+          completedPercentage: practiceList._count.words > 0
+            ? Math.round((currentPosition / practiceList._count.words) * PERCENTAGE_MULTIPLIER)
+            : 0,
+        },
+      };
+
+      res.status(StatusCodes.OK).json(response);
+
+      return;
+    }
+
     // Upsert practice progress (create or update)
     const [practiceProgress] = await prisma.$queryRaw<PracticeProgressRecord[]>`
       INSERT INTO "PracticeProgress" (
@@ -163,7 +192,9 @@ export async function stopPractice(
         accuracy: (correctAnswers + wrongAnswers) > 0 ? Math.round((correctAnswers / (correctAnswers + wrongAnswers)) * PERCENTAGE_MULTIPLIER) : 0,
         position: currentPosition,
         totalWords: practiceList._count.words,
-        completedPercentage: Math.round((currentPosition / practiceList._count.words) * PERCENTAGE_MULTIPLIER),
+        completedPercentage: practiceList._count.words > 0
+          ? Math.round((currentPosition / practiceList._count.words) * PERCENTAGE_MULTIPLIER)
+          : 0,
       },
     };
 

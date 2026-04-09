@@ -47,6 +47,9 @@ export interface PracticeWordResponse {
   title: string
   totalWords: number
   reverseMode: boolean
+  correctAnswers: number
+  wrongAnswers: number
+  resumedFromSavedProgress: boolean
   currentWordIndex: number
   currentWord: PracticeWordPrompt
   hasNextWord: boolean
@@ -118,8 +121,37 @@ export interface StopPracticeResults {
 
 export interface StopPracticeResponse {
   message: string
-  data: PracticeProgressResponse
+  data: PracticeProgressResponse | null
   results: StopPracticeResults
+}
+
+export interface PastExerciseRow {
+  id: number
+  practiceListId: number
+  title: string
+  correctAnswers: number
+  wrongAnswers: number
+  currentPosition: number
+  reverseMode: boolean
+  totalWords: number
+  updatedAt: Date
+}
+
+export interface PastExerciseItem {
+  id: number
+  practiceListId: number
+  title: string
+  correctAnswers: number
+  wrongAnswers: number
+  currentPosition: number
+  reverseMode: boolean
+  totalWords: number
+  completedPercentage: number
+  updatedAt: string
+}
+
+export interface PastExercisesResponse {
+  items: PastExerciseItem[]
 }
 
 export interface PracticeMissedWord {

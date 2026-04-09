@@ -123,6 +123,15 @@ export async function submitPracticeAnswer(
     const hasNextWord = nextIndex < totalWords;
     const nextWord = hasNextWord ? practiceList.words[nextIndex] : null;
 
+    if (!hasNextWord) {
+      await prisma.practiceProgress.deleteMany({
+        where: {
+          userId,
+          practiceListId: listId,
+        },
+      });
+    }
+
     const response: PracticeAnswerResponse = {
       listId: practiceList.id,
       title: practiceList.title,

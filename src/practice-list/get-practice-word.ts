@@ -18,9 +18,9 @@ function parsePositiveInteger(value: unknown): number | null {
   return parsedValue;
 }
 
-function parseIndexQuery(value: unknown): number | null {
+function parseIndexQuery(value: unknown): number | null | undefined {
   if (value === undefined) {
-    return 0;
+    return undefined;
   }
 
   if (Array.isArray(value) || typeof value !== 'string') {
@@ -36,24 +36,32 @@ function parseIndexQuery(value: unknown): number | null {
   return parsedValue;
 }
 
-function parseReverseModeQuery(value: unknown): boolean {
+function parseReverseModeQuery(value: unknown): boolean | null {
   if (value === undefined) {
-    return false;
+    return null;
   }
 
   if (Array.isArray(value)) {
-    return false;
+    return null;
   }
 
   if (typeof value === 'string') {
-    return value === 'true';
+    if (value === 'true') {
+      return true;
+    }
+
+    if (value === 'false') {
+      return false;
+    }
+
+    return null;
   }
 
   if (typeof value === 'boolean') {
     return value;
   }
 
-  return false;
+  return null;
 }
 
 export async function getPracticeWord(req: AuthenticatedRequest, res: Response): Promise<void> {
@@ -81,7 +89,13 @@ export async function getPracticeWord(req: AuthenticatedRequest, res: Response):
     return;
   }
 
-  const reverseMode = parseReverseModeQuery(req.query.reverseMode);
+  const requestedReverseMode = parseReverseModeQuery(req.query.reverseMode);
+
+  if (req.query.reverseMode !== undefined && requestedReverseMode === null) {
+    res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid reverseMode query parameter' });
+
+    return;
+  }
 
   try {
     const practiceList = await prisma.practiceList.findFirst({
@@ -120,27 +134,54 @@ export async function getPracticeWord(req: AuthenticatedRequest, res: Response):
 
     const totalWords = practiceList._count.words;
 
-    if (requestedIndex >= totalWords) {
+    const practiceProgress = await prisma.practiceProgress.findUnique({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        userId_practiceListId: {
+          userId,
+          practiceListId: listId,
+        },
+      },
+      select: {
+        correctAnswers: true,
+        wrongAnswers: true,
+        currentPosition: true,
+        reverseMode: true,
+      },
+    });
+
+    const hasSavedProgress = practiceProgress !== null && practiceProgress.currentPosition < totalWords;
+    const resolvedIndex = requestedIndex ?? (hasSavedProgress ? practiceProgress.currentPosition : 0);
+
+    if (resolvedIndex >= totalWords) {
       res.status(StatusCodes.BAD_REQUEST).json({ message: 'Requested index is out of range' });
 
       return;
     }
 
-    const currentWord = practiceList.words[requestedIndex];
+    const resumedFromSavedProgress = requestedIndex === undefined && hasSavedProgress;
+    const reverseMode = requestedReverseMode ?? (resumedFromSavedProgress ? practiceProgress.reverseMode : false);
+    const correctAnswers = resumedFromSavedProgress ? practiceProgress.correctAnswers : 0;
+    const wrongAnswers = resumedFromSavedProgress ? practiceProgress.wrongAnswers : 0;
+
+    const currentWord = practiceList.words[resolvedIndex];
 
     const response: PracticeWordResponse = {
       listId: practiceList.id,
       title: practiceList.title,
       totalWords,
       reverseMode,
-      currentWordIndex: requestedIndex + 1,
+      correctAnswers,
+      wrongAnswers,
+      resumedFromSavedProgress,
+      currentWordIndex: resolvedIndex + 1,
       currentWord: {
         id: currentWord.id,
         dutchWord: currentWord.dutchWord,
         englishWord: reverseMode ? currentWord.englishWord : undefined,
       },
-      hasNextWord: requestedIndex + 1 < totalWords,
-      nextIndex: requestedIndex + 1 < totalWords ? requestedIndex + 1 : null,
+      hasNextWord: resolvedIndex + 1 < totalWords,
+      nextIndex: resolvedIndex + 1 < totalWords ? resolvedIndex + 1 : null,
     };
 
     res.status(StatusCodes.OK).json(response);
