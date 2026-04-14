@@ -46,7 +46,7 @@ model PracticeProgress {
   id Int @id @default(autoincrement())
   userId Int
   practiceListId Int
-  
+
   correctAnswers Int @default(0)
   wrongAnswers Int @default(0)
   currentPosition Int @default(0)
